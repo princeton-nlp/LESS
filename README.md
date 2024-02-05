@@ -47,8 +47,8 @@ To enhance downstream performance from data selection, it's crucial to start wit
 ```bash 
 DATA_DIR=../data
 MODEL_PATH=meta-llama/Llama-2-7b-hf
-PERCENTAGE=0.05 # percentage of the full data to train, you can specify training file you want to use in the script
-DATA_SEED=89
+PERCENTAGE=0.05 # percentage of the full data to train, you can specify the training file you want to use in the script
+DATA_SEED=3
 JOB_NAME=llama2-7b-p${PERCENTAGE}-lora-seed${DATA_SEED}
 
 ./less/scripts/train/warmup_lora_train.sh "$DATA_DIR" "$MODEL_PATH" "$PERCENTAGE" "$DATA_SEED" "$JOB_NAME"
@@ -61,7 +61,7 @@ Once the initial warmup training stage is completed, we will collect gradients f
 CKPT=105
 
 TRAINING_DATA_NAME=dolly
-TRAINING_DATA_FILE=../data/train/processed/dolly/dolly_data.jsonl
+TRAINING_DATA_FILE=../data/train/processed/dolly/dolly_data.jsonl # when changing data name, change the data path accordingly
 GRADIENT_TYPE="adam"
 MODEL_PATH=../out/llama2-7b-p0.05-lora-seed3/checkpoint-${CKPT}
 OUTPUT_PATH=../grads/llama2-7b-p0.05-lora-seed3/${TRAINING_DATA_NAME}-ckpt${CKPT}-${GRADIENT_TYPE}
@@ -69,8 +69,7 @@ DIMS="8192"
 
 ./less/scripts/get_info/get_train_lora_grads.sh "$TRAINING_DATA_FILE" "$MODEL_PATH" "$OUTPUT_PATH" "$DIMS" "$GRADIENT_TYPE"
 ```
-
-Ideally, you would aim to create a datastore that encompasses a gradient of all the checkpoints and training data from which you wish to choose.
+Ideally, you would aim to create a datastore that encompasses a gradient of all the checkpoints and training data from which you wish to choose. 
 
 ### Step 3: Selecting data for a task
 To select data for a particular downstream task, it's necessary to first prepare data specific to that task, using the same instruction-tuning prompt format as was employed during training. We have set up data loading modules for three evaluation datasets featured in our work: BBH, TydiQA, and MMLU. If you're interested in data selection for additional tasks, you can expand the [`less/data_selection/get_validation_dataset.py`](less/data_selection/get_validation_dataset.py) script to accommodate those tasks. Similar to obtaining gradients for training data, run the following script. The primary difference is that this process will yield SGD gradients for the validation data, following the formulation of the influence estimation. 
@@ -86,14 +85,14 @@ DIMS="4096 8192" # We use 8192 as our default projection dimension
 
 ./less/scripts/get_info/get_eval_lora_grads.sh "$TASK" "$DATA_DIR" "$MODEL_PATH" $OUTPUT_PATH "$DIMS"
 ```
-After obtaining the gradients for the validation data, we can then select data for the task. The following script will calculate the influence score for each training data point, and select the top-k data points with the highest influence score.
+You should gain the gradients of the validation data for all the checkpoints you used for building the gradient datastore in the previous step. After obtaining the gradients for the validation data, we can then select data for the task. The following script will calculate the influence score for each training data point, and select the top-k data points with the highest influence score.
 
 ```bash
 DIM=8192 # decide which dimension to use
 GRADIENT_PATH=../grads/llama2-7b-p0.05-lora-seed3/{}-ckpt{}-adam/dim${DIM}
-TRAIN_FILE_NAMES="dolly oasst1"
-CKPTS="105 211" # checkpoing index
-CHECKPOINT_WEIGHTS="1.6877e-05 1.2859e-05" #  7.7030e-06 2.5616e-06" # average lr of the epoch
+TRAIN_FILE_NAMES="flan_v2 cot dolly oasst1"
+CKPTS="105 211 317 420" # checkpoing index
+CHECKPOINT_WEIGHTS="1.6877e-05 1.2859e-05 7.7030e-06 2.5616e-06" # average lr of the epoch
 
 VALIDATION_GRADIENT_PATH=../grads/llama2-7b-p0.05-lora-seed3/{}-ckpt{}-sgd/dim${DIM}
 TARGET_TASK_NAMES="tydiqa"
@@ -125,6 +124,7 @@ JOB_NAME=llama2-7b-less-p${PERCENTAGE}-lora
 
 ./less/scripts/train/lora_train.sh "$TRAIN_FILES" "$MODEL_PATH" "$JOB_NAME" 
 ```
+Note that you can also perform full-parameter finetuning by removing the lora training parameters. 
 
 ## Evaluation
 Please follow the instructions in the [evaluation](evaluation/README.md) folder to evaluate the performance of the model trained on the selected data.
