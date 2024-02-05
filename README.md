@@ -1,9 +1,10 @@
-# Selecting Influential Data for 
-
+# LESS: Selecting Influential Data for Targeted Instruction Tuning
 🌟 [ArXiv Preprint](TODO) 
 
+This repo hosts the code for the paper "LESS: Selecting Influential Data for Targeted Instruction Tuning". In this work, we propose a data selection method to select influential data to induce a target capability.
+
 ## 🔗 Quick Links
-- [Selecting Influential Data for](#selecting-influential-data-for)
+- [LESS: Selecting Influential Data for Targeted Instruction Tuning](#less-selecting-influential-data-for-targeted-instruction-tuning)
   - [🔗 Quick Links](#-quick-links)
   - [Install Requirements](#install-requirements)
   - [Data Preparation](#data-preparation)
@@ -36,9 +37,7 @@ pip install -e .
 
 
 ## Data Preparation
-We follow the [open-instruct](https://github.com/allenai/open-instruct?tab=readme-ov-file#dataset-preparation) repo to prepare hour instruction tuning datasets. You can also find a processed copy of files here [TODO]. 
-
-We also get the evaluation data ready in the same way. 
+We follow the [open-instruct](https://github.com/allenai/open-instruct?tab=readme-ov-file#dataset-preparation) repo to prepare hour instruction tuning datasets. In our project, we utilize a combination of four training datasets: Flan v2, COT, Dolly, and Open Assistant. For the purposes of evaluation, we employ three additional datasets: MMLU, Tydiqa, and BBH. A processed version of these files will be made available [here] [TODO].
 
 ## Data Selection Pipeline
 
