@@ -8,10 +8,11 @@
   - [Install Requirements](#install-requirements)
   - [Data Preparation](#data-preparation)
   - [Data Selection Pipeline](#data-selection-pipeline)
-    - [Warmup training](#warmup-training)
-    - [Building the gradient datastore](#building-the-gradient-datastore)
-    - [Selecting data for a task](#selecting-data-for-a-task)
-    - [Train with your selected data](#train-with-your-selected-data)
+    - [Step 1: Warmup training](#step-1-warmup-training)
+    - [Step 2: Building the gradient datastore](#step-2-building-the-gradient-datastore)
+    - [Step 3: Selecting data for a task](#step-3-selecting-data-for-a-task)
+    - [Step 4: Train with your selected data](#step-4-train-with-your-selected-data)
+  - [Evaluation](#evaluation)
   - [Bugs or Questions?](#bugs-or-questions)
   - [Citation](#citation)
 
@@ -41,7 +42,7 @@ We also get the evaluation data ready in the same way.
 
 ## Data Selection Pipeline
 
-### Warmup training
+### Step 1: Warmup training
 To enhance downstream performance from data selection, it's crucial to start with a warmup training step. This involves selecting a small portion of your entire dataset to train using the LoRA method. Follow these steps for effective warmup training:
 
 ```bash 
@@ -54,7 +55,7 @@ JOB_NAME=llama2-7b-p${PERCENTAGE}-lora-seed${DATA_SEED}
 ./less/scripts/train/warmup_lora_train.sh "$DATA_DIR" "$MODEL_PATH" "$PERCENTAGE" "$DATA_SEED" "$JOB_NAME"
 ```
 
-### Building the gradient datastore
+### Step 2: Building the gradient datastore
 Once the initial warmup training stage is completed, we will collect gradients for the entire training dataset. For each checkpoint, our goal is to obtain the gradients of all the training data that we would like to select from. An example script is shown below.
 
 ```bash
@@ -72,8 +73,8 @@ DIMS="8192"
 
 Ideally, you would aim to create a datastore that encompasses a gradient of all the checkpoints and training data from which you wish to choose.
 
-### Selecting data for a task
-To select data for a particular downstream task, it's necessary to first prepare data specific to that task, using the same instruction-tuning prompt format as was employed during training. We have set up data loading modules for three evaluation datasets featured in our work: BBH, TydiQA, and MMLU. If you're interested in data selection for additional tasks, you can expand the [`less/data_selection/get_validation_dataset.py`](less/data_selection/get_validation_dataset.py) script to accommodate those tasks. Similar to obtaining gradients for training data, run the following script. The primary difference is that this process will yield vanilla gradients for the validation data, following the formulation of the influence function. 
+### Step 3: Selecting data for a task
+To select data for a particular downstream task, it's necessary to first prepare data specific to that task, using the same instruction-tuning prompt format as was employed during training. We have set up data loading modules for three evaluation datasets featured in our work: BBH, TydiQA, and MMLU. If you're interested in data selection for additional tasks, you can expand the [`less/data_selection/get_validation_dataset.py`](less/data_selection/get_validation_dataset.py) script to accommodate those tasks. Similar to obtaining gradients for training data, run the following script. The primary difference is that this process will yield SGD gradients for the validation data, following the formulation of the influence estimation. 
 
 ```bash
 
@@ -113,34 +114,33 @@ python3 -m less.data_selection.write_selected_data \
 --percentage 0.05
 ```
 
-<!-- ```
-TO BE REMOVED
-TASK=tydiqa
-DATA_DIR=/scratch/gpfs/mengzhou/space10/final/data
-MODEL_PATH=/scratch/gpfs/mengzhou/space10/out/19_random_7b/p0.05_seed6_lora/checkpoint-105
-OUTPUT_PATH=/scratch/gpfs/mengzhou/space10/final/out/test
-DIMS="4096 8192"
-IS_PEFT=True
+### Step 4: Train with your selected data
+After selecting the data, you can use the following script to train the model with the selected data. 
 
-cd $n/space10/final/less
-./less/scripts/get_info/get_eval_lora_grads.sh "$TASK" "$DATA_DIR" "$MODEL_PATH" "$OUTPUT_PATH" "$DIMS"
-``` -->
+```bash 
+TARGET_TASK_NAME="tydiqa"
+PERCENTAGE=0.05
+TRAIN_FILES=../selected_data/${TARGET_TASK_NAME}/top_p${PERCENTAGE}.jsonl
+MODEL_PATH=meta-llama/Llama-2-7b-hf
+JOB_NAME=llama2-7b-less-p${PERCENTAGE}-lora
 
-### Train with your selected data
+./less/scripts/train/lora_train.sh "$TRAIN_FILES" "$MODEL_PATH" "$JOB_NAME" 
+```
+
+## Evaluation
+Please follow the instructions in the [evaluation](evaluation/README.md) folder to evaluate the performance of the model trained on the selected data.
 
 ## Bugs or Questions?
 If you have any questions related to the code or the paper, feel free to email Mengzhou (mengzhou@princeton.edu). If you encounter any problems when using the code, or want to report a bug, you can open an issue. Please try to specify the problem with details so we can help you better and quicker!
-
 
 ## Citation
 Please cite our paper if you find the repo helpful in your work:
 
 ```bibtex
-@article{xia2023sheared,
-  title={Sheared llama: Accelerating language model pre-training via structured pruning},
-  author={Xia, Mengzhou and Gao, Tianyu and Zeng, Zhiyuan and Chen, Danqi},
-  journal={arXiv preprint arXiv:2310.06694},
-  year={2023}
+@article{xia2024less,
+  title={Less: Selecting Influential Data for Instruction Tuning},
+  author={Xia, Mengzhou and Malladi, Sadhika and Gururangan, Suchin and Arora, Sanjeev and Chen, Danqi},
+  year={2024}
 }
 ```
 
