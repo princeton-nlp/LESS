@@ -1,5 +1,5 @@
 # LESS: Selecting Influential Data for Targeted Instruction Tuning
-🌟 [ArXiv Preprint](TODO) 
+🌟 [ArXiv Preprint](https://arxiv.org/abs/2402.04333) 
 
 This repo hosts the code for the paper "LESS: Selecting Influential Data for Targeted Instruction Tuning". In this work, we propose a data selection method to select influential data to induce a target capability.
 
