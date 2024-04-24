@@ -16,7 +16,7 @@ set_valid_dir() {
     fi
 }
 
-
+export DATA_DIR=$n/space10/data/eval
 export set_save_dir
 export set_valid_dir
 

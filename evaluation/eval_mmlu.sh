@@ -1,4 +1,4 @@
-source eval.sh
+source run/experiments/eval/eval.sh
 
 # main evaluation function
 eval_mmlu() {
@@ -13,7 +13,7 @@ eval_mmlu() {
     --tokenizer_name_or_path $mdir \
     --eval_batch_size 4 \
     --convert_to_bf16"
-    eval "$cmd"
+    eval "$cmd" 2>&1 | tee $save_dir/log.txt
 }
 
 # evaluate the validation set, which is not supported yet
@@ -31,7 +31,7 @@ valid_mmlu() {
     --tokenizer_name_or_path $mdir \
     --eval_batch_size 4 \
     --convert_to_bf16"
-    eval "$cmd"
+    eval "$cmd" 2>&1 | tee $save_dir/log.txt
 }
 
 # extract the results
@@ -51,3 +51,8 @@ extract_valid_mmlu() {
     result=$(echo "$result * 100" | bc)
     echo $result
 }
+
+export -f eval_mmlu
+export -f valid_mmlu
+export -f extract_mmlu
+export -f extract_valid_mmlu

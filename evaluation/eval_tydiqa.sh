@@ -1,4 +1,4 @@
-source eval.sh
+source run/experiments/eval/eval.sh
 
 # main evaluation function
 eval_tydiqa() {
@@ -17,6 +17,7 @@ eval_tydiqa() {
     --use_chat_format \
     --convert_to_bf16 \
     --chat_formatting_function eval.templates.create_prompt_with_tulu_chat_format"
+    eval "$cmd" 2>&1 | tee $save_dir/log.txt
 }
 
 # evaluate the validation set, which is not supported yet
@@ -37,6 +38,7 @@ valid_tydiqa() {
     --use_chat_format \
     --convert_to_bf16 \
     --chat_formatting_function eval.templates.create_prompt_with_tulu_chat_format"
+    eval "$cmd" 2>&1 | tee $save_dir/log.txt
 }
 
 # extract the results
@@ -54,3 +56,8 @@ extract_valid_tydiqa() {
     result=$(jq .average.f1 $save_dir/metrics.json)
     echo $result
 }
+
+export -f eval_tydiqa
+export -f valid_tydiqa
+export -f extract_tydiqa
+export -f extract_valid_tydiqa
