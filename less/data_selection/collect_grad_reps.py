@@ -84,6 +84,7 @@ def get_number_of_params(model):
     num_params = sum([p.numel()
                      for p in model.parameters() if p.requires_grad])
     print(f"Total number of parameters that require gradients: {num_params}")
+    return num_params
 
 
 def obtain_gradients(model, batch):

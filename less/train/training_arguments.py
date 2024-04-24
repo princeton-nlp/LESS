@@ -24,6 +24,12 @@ fsdp_config = {
         "limit_all_gathers": "true",
         "use_orig_params": "true",
     },
+    "llama_finetune": {
+        "fsdp_transformer_layer_cls_to_wrap": ["LlamaDecoderLayer"],
+        "fsdp_backward_prefetch": "backward_pre",
+        "limit_all_gathers": "true",
+        "use_orig_params": "true",
+    },
     "llama2_7b_finetune": {
         "fsdp_transformer_layer_cls_to_wrap": ["LlamaDecoderLayer"],
         "fsdp_backward_prefetch": "backward_pre",
