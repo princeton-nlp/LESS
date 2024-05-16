@@ -73,8 +73,9 @@ if __name__ == "__main__":
             all_scores, dim=0, descending=True)
         sorted_score_file = os.path.join(output_path, f"sorted.csv")
 
-        sorted_index = file_specific_index[sorted_index]
         data_from = data_from[sorted_index]
+        sorted_index = file_specific_index[sorted_index]
+        
 
         if not os.path.exists(sorted_score_file):
             with open(sorted_score_file, 'w', encoding='utf-8') as file:
