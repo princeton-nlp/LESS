@@ -1,4 +1,4 @@
-source run/experiments/eval/eval.sh
+source eval.sh
 
 # main evaluation function
 eval_tydiqa() {
