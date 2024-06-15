@@ -1,7 +1,6 @@
 # LESS: Selecting Influential Data for Targeted Instruction Tuning
-🌟 [ArXiv Preprint](https://arxiv.org/abs/2402.04333) 
 
-This repo hosts the code for the paper "LESS: Selecting Influential Data for Targeted Instruction Tuning". In this work, we propose a data selection method to select influential data to induce a target capability.
+This repo contains the code for our ICML 2024  paper [LESS: Selecting Influential Data for Targeted Instruction Tuning](https://arxiv.org/abs/2402.04333). In this work, we propose a data selection method to select influential data to induce a target capability.
 
 ## 🔗 Quick Links
 - [LESS: Selecting Influential Data for Targeted Instruction Tuning](#less-selecting-influential-data-for-targeted-instruction-tuning)
@@ -136,10 +135,11 @@ If you have any questions related to the code or the paper, feel free to email M
 Please cite our paper if you find the repo helpful in your work:
 
 ```bibtex
-@article{xia2024less,
-  title={Less: Selecting Influential Data for Instruction Tuning},
-  author={Xia, Mengzhou and Malladi, Sadhika and Gururangan, Suchin and Arora, Sanjeev and Chen, Danqi},
-  year={2024}
+@inproceedings{xia2024less,
+   title={{LESS}: Selecting Influential Data for Targeted Instruction Tuning},
+   author={Xia, Mengzhou and Malladi, Sadhika and Gururangan, Suchin and Arora, Sanjeev and Chen, Danqi},
+   booktitle={International Conference on Machine Learning (ICML)},
+   year={2024}
 }
 ```
 
