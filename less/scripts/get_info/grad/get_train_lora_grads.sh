@@ -16,5 +16,4 @@ python3 -m less.data_selection.get_info \
 --model_path $model \
 --output_path $output_path \
 --gradient_projection_dimension $dims \
---gradient_type $gradient_type \
---max_samples 200
+--gradient_type $gradient_type
